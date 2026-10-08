@@ -45,7 +45,7 @@ export default function Header() {
   const { data: session, isPending } = authClient.useSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [vaultOpen, setVaultOpen] = useState(false);
-  const [keyCounts, setKeyCounts] = useState({ configured: 0, total: 6 });
+  const [keyCounts, setKeyCounts] = useState({ configured: 0, total: 8 });
 
   React.useEffect(() => {
     setKeyCounts(getKeyCount());

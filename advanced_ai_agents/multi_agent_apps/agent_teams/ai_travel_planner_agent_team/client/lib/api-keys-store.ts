@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
-
 export type SupportedProvider =
-  | "gemini"
-  | "openai_codex"
+  | "openai"
+  | "anthropic"
+  | "google"
+  | "huggingface"
+  | "amazon_bedrock"
   | "groq"
-  | "mistral"
-  | "meta_llama"
-  | "microsoft_copilot";
+  | "nvidia"
+  | "xai_grok";
 
 export interface ProviderConfig {
   id: SupportedProvider;
@@ -22,68 +22,81 @@ export interface ProviderConfig {
 
 export const SUPPORTED_PROVIDERS: ProviderConfig[] = [
   {
-    id: "gemini",
-    name: "Gemini (Google AI)",
+    id: "openai",
+    name: "OpenAI",
+    tagline: "GPT-4o, o1, o3-mini & Agents SDK",
+    placeholder: "sk-proj-...",
+    docsUrl: "https://platform.openai.com/api-keys",
+    prefixPattern: "sk-",
+    description: "Powers frontier GPT models, function calling, tool use, and multi-agent coordination."
+  },
+  {
+    id: "anthropic",
+    name: "Anthropic Claude",
+    tagline: "Claude 3.5 Sonnet, Claude 3.7 & Haiku",
+    placeholder: "sk-ant-api03-...",
+    docsUrl: "https://console.anthropic.com/settings/keys",
+    prefixPattern: "sk-ant-",
+    description: "Industry-leading reasoning, constitutional alignment, and long-context synthesis."
+  },
+  {
+    id: "google",
+    name: "Google (Gemini)",
     tagline: "Gemini 2.5 Flash, 2.5 Pro & Gemini 3.8",
     placeholder: "AIzaSy...",
     docsUrl: "https://aistudio.google.com/apikey",
     prefixPattern: "AIza",
-    description: "Powers Google Agent Development Kit, multimodal video, and real-time reasoning."
+    description: "Powers Google Agent Development Kit, multimodal video, grounding, and real-time reasoning."
   },
   {
-    id: "openai_codex",
-    name: "Codex & OpenAI",
-    tagline: "GPT-4o, OpenAI Agents SDK & Codex",
-    placeholder: "sk-proj-...",
-    docsUrl: "https://platform.openai.com/api-keys",
-    prefixPattern: "sk-",
-    description: "Powers OpenAI Agents SDK swarms, research tools, and code generation."
+    id: "huggingface",
+    name: "Hugging Face",
+    tagline: "Inference API, Hub & Open Foundation Models",
+    placeholder: "hf_...",
+    docsUrl: "https://huggingface.co/settings/tokens",
+    prefixPattern: "hf_",
+    description: "Direct access to 100,000+ open-source models, embeddings, and community checkpoints."
+  },
+  {
+    id: "amazon_bedrock",
+    name: "Amazon Bedrock",
+    tagline: "AWS Bedrock & Enterprise Foundation Models",
+    placeholder: "AKIA... or Bedrock API Key",
+    docsUrl: "https://aws.amazon.com/bedrock/",
+    description: "Managed enterprise cloud access to Claude, Amazon Nova, Llama 3, and Titan."
   },
   {
     id: "groq",
-    name: "Groq LPU",
+    name: "Groq Cloud LPU",
     tagline: "Ultra low-latency Llama 3.3 70B & Mixtral",
     placeholder: "gsk_...",
     docsUrl: "https://console.groq.com/keys",
     prefixPattern: "gsk_",
-    description: "Powers sub-500ms real-time conversational agents and financial sentiment tools."
+    description: "Sub-500ms real-time conversational agents powered by Groq's Language Processing Units."
   },
   {
-    id: "mistral",
-    name: "Mistral AI",
-    tagline: "Mistral Large 2, Codestral & Pixtral",
-    placeholder: "mistral_api_key...",
-    docsUrl: "https://console.mistral.ai/api-keys",
-    description: "European frontier models optimized for multilingual reasoning and autonomous code."
+    id: "nvidia",
+    name: "NVIDIA NIM",
+    tagline: "NVIDIA NeMo, Llama 3 & TensorRT-LLM",
+    placeholder: "nvapi-...",
+    docsUrl: "https://build.nvidia.com/",
+    prefixPattern: "nvapi-",
+    description: "GPU-accelerated microservices and enterprise NIM containers for high-throughput inference."
   },
   {
-    id: "meta_llama",
-    name: "Meta AI (Llama)",
-    tagline: "Llama 3.3 70B, Llama 3.2 Vision",
-    placeholder: "meta_or_together_key...",
-    docsUrl: "https://llama.meta.com",
-    description: "Open-weights foundation intelligence for local and cloud RAG pipelines."
-  },
-  {
-    id: "microsoft_copilot",
-    name: "Microsoft Copilot & Azure",
-    tagline: "Azure OpenAI & Microsoft Copilot Studio",
-    placeholder: "azure_copilot_key...",
-    docsUrl: "https://azure.microsoft.com/products/ai-services/openai-service",
-    description: "Enterprise compliance models for meeting analysis and corporate intelligence."
+    id: "xai_grok",
+    name: "xAI (Grok)",
+    tagline: "Grok 2, Grok 3 & xAI Console API",
+    placeholder: "xai-...",
+    docsUrl: "https://console.x.ai/",
+    prefixPattern: "xai-",
+    description: "Unfiltered real-time frontier reasoning engine connected to live web telemetry."
   }
 ];
 
 const VAULT_STORAGE_KEY = "awesome_llm_apps_byok_vault";
 
-export interface KeyVaultData {
-  gemini?: string;
-  openai_codex?: string;
-  groq?: string;
-  mistral?: string;
-  meta_llama?: string;
-  microsoft_copilot?: string;
-}
+export type KeyVaultData = Partial<Record<SupportedProvider, string>>;
 
 export function loadStoredKeys(): KeyVaultData {
   if (typeof window === "undefined") return {};

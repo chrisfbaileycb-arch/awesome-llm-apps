@@ -77,7 +77,7 @@ function AppRunnerView({ item }: { item: CatalogItem }) {
   const [copiedCommand, setCopiedCommand] = useState<boolean>(false);
   const [activePlatform, setActivePlatform] = useState<"Universal" | "Google AI Studio" | "Anthropic Claude" | "OpenAI Platform" | "Cursor / Windsurf">("Universal");
   const [vaultOpen, setVaultOpen] = useState<boolean>(false);
-  const [keyCounts, setKeyCounts] = useState({ configured: 0, total: 6 });
+  const [keyCounts, setKeyCounts] = useState({ configured: 0, total: 8 });
 
   useEffect(() => {
     setKeyCounts(getKeyCount());

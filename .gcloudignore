@@ -1,0 +1,34 @@
+.git
+.gitignore
+.gcloudignore
+.env
+.env.local
+.env.*.local
+
+# Node & Build caches
+**/node_modules/
+**/.next/cache/
+**/.cache/
+**/.turbo/
+**/*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python caches
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/.Python
+**/.pytest_cache/
+**/venv/
+**/.venv/
+**/env/
+**/.env/
+
+# IDE & OS
+.idea/
+.vscode/
+**/.DS_Store
+Thumbs.db
