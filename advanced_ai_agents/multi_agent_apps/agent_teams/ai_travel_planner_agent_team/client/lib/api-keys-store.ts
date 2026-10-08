@@ -127,3 +127,26 @@ export function getKeyCount(): { configured: number; total: number } {
   }).length;
   return { configured, total: SUPPORTED_PROVIDERS.length };
 }
+
+export function getProviderForModel(modelName: string = ""): SupportedProvider {
+  const m = modelName.toLowerCase();
+  if (m.includes("claude") || m.includes("anthropic")) return "anthropic";
+  if (m.includes("gemini") || m.includes("google")) return "google";
+  if (m.includes("groq") || m.includes("lpu")) return "groq";
+  if (m.includes("huggingface") || m.includes("hf_") || m.includes("tgi")) return "huggingface";
+  if (m.includes("nvidia") || m.includes("nemotron") || m.includes("nim")) return "nvidia";
+  if (m.includes("grok") || m.includes("xai")) return "xai_grok";
+  if (m.includes("bedrock") || m.includes("nova") || m.includes("titan") || m.includes("aws")) return "amazon_bedrock";
+  return "openai";
+}
+
+export function getStoredKey(providerId: SupportedProvider): string | undefined {
+  const keys = loadStoredKeys();
+  return keys[providerId];
+}
+
+export function maskApiKey(key?: string): string {
+  if (!key || key.length < 8) return "••••••••";
+  return `${key.slice(0, 4)}••••${key.slice(-4)}`;
+}
+

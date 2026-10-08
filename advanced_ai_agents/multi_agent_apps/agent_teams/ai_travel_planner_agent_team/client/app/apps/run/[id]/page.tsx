@@ -41,7 +41,7 @@ import {
   KeyRound
 } from "lucide-react";
 import ApiKeysVaultModal from "@/components/api-keys-vault-modal";
-import { getKeyCount } from "@/lib/api-keys-store";
+import { getKeyCount, getProviderForModel, getStoredKey, maskApiKey } from "@/lib/api-keys-store";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -79,12 +79,19 @@ function AppRunnerView({ item }: { item: CatalogItem }) {
   const [vaultOpen, setVaultOpen] = useState<boolean>(false);
   const [keyCounts, setKeyCounts] = useState({ configured: 0, total: 8 });
 
+  const modelProvider = useMemo(() => getProviderForModel(item.models[0]), [item.models]);
+  const [activeUserKey, setActiveUserKey] = useState<string | undefined>(undefined);
+
   useEffect(() => {
     setKeyCounts(getKeyCount());
-    const handleUpdate = () => setKeyCounts(getKeyCount());
+    setActiveUserKey(getStoredKey(modelProvider));
+    const handleUpdate = () => {
+      setKeyCounts(getKeyCount());
+      setActiveUserKey(getStoredKey(modelProvider));
+    };
     window.addEventListener("byok-vault-updated", handleUpdate);
     return () => window.removeEventListener("byok-vault-updated", handleUpdate);
-  }, []);
+  }, [modelProvider]);
 
   // Dynamic Workspace State
   const [userInput, setUserInput] = useState<string>("");
@@ -171,6 +178,7 @@ function AppRunnerView({ item }: { item: CatalogItem }) {
     setExecutionLogs([
       `[init] Booting execution container for ${item.name}...`,
       `[config] Model: ${item.models[0]} | Temp: ${temperature}`,
+      `[auth] BYOK check: ${activeUserKey ? `Using user front-end key (${maskApiKey(activeUserKey)}) for ${modelProvider.toUpperCase()}` : `Front-end sandbox mode (Zero backend owner billing)`}`,
       `[runtime] Loading framework bindings (${item.framework})...`,
       `[agent] Parsing input payload (${userInput.length} chars)...`
     ]);
@@ -456,6 +464,30 @@ function AppRunnerView({ item }: { item: CatalogItem }) {
                         <span className="font-mono font-medium text-foreground">&lt; 1.2s</span>
                       </div>
                     </div>
+                  </div>
+
+                  {/* Front-End BYOK Key Status Bar */}
+                  <div className="p-2.5 rounded-lg border text-xs flex items-center justify-between transition-colors bg-muted/40">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`w-2 h-2 rounded-full ${
+                          activeUserKey ? "bg-emerald-500 animate-pulse" : "bg-amber-500"
+                        }`}
+                      />
+                      <span className="text-[11px] font-medium text-foreground">
+                        {activeUserKey
+                          ? `Using your ${modelProvider.toUpperCase()} key (${maskApiKey(activeUserKey)})`
+                          : `No ${modelProvider.toUpperCase()} key set (Front-end only, zero owner billing)`}
+                      </span>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setVaultOpen(true)}
+                      className="h-6 px-2 text-[10px] text-primary hover:underline font-bold"
+                    >
+                      {activeUserKey ? "Change" : "Add Key"}
+                    </Button>
                   </div>
 
                   {/* Launch Execution Button */}
