@@ -37,8 +37,11 @@ import {
   BarChart3,
   Flame,
   Clock,
-  ShieldCheck
+  ShieldCheck,
+  KeyRound
 } from "lucide-react";
+import ApiKeysVaultModal from "@/components/api-keys-vault-modal";
+import { getKeyCount } from "@/lib/api-keys-store";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -73,6 +76,15 @@ function AppRunnerView({ item }: { item: CatalogItem }) {
   const [copiedPrompt, setCopiedPrompt] = useState<boolean>(false);
   const [copiedCommand, setCopiedCommand] = useState<boolean>(false);
   const [activePlatform, setActivePlatform] = useState<"Universal" | "Google AI Studio" | "Anthropic Claude" | "OpenAI Platform" | "Cursor / Windsurf">("Universal");
+  const [vaultOpen, setVaultOpen] = useState<boolean>(false);
+  const [keyCounts, setKeyCounts] = useState({ configured: 0, total: 6 });
+
+  useEffect(() => {
+    setKeyCounts(getKeyCount());
+    const handleUpdate = () => setKeyCounts(getKeyCount());
+    window.addEventListener("byok-vault-updated", handleUpdate);
+    return () => window.removeEventListener("byok-vault-updated", handleUpdate);
+  }, []);
 
   // Dynamic Workspace State
   const [userInput, setUserInput] = useState<string>("");
@@ -281,6 +293,18 @@ function AppRunnerView({ item }: { item: CatalogItem }) {
             </div>
 
             <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setVaultOpen(true)}
+                className="text-xs h-8 font-semibold flex items-center gap-1.5 border-primary/30 hover:border-primary"
+              >
+                <KeyRound className="w-3.5 h-3.5 text-primary" />
+                <span>API Keys</span>
+                <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.2 rounded-full font-mono">
+                  {keyCounts.configured}/{keyCounts.total}
+                </span>
+              </Button>
               <Button variant="outline" size="sm" onClick={copyCommandToClipboard} className="text-xs h-8">
                 {copiedCommand ? <Check className="w-3.5 h-3.5 mr-1.5 text-emerald-500" /> : <Terminal className="w-3.5 h-3.5 mr-1.5" />}
                 CLI Command
@@ -683,6 +707,9 @@ function AppRunnerView({ item }: { item: CatalogItem }) {
           </Card>
         )}
       </div>
+
+      {/* Front-End BYOK Vault Modal */}
+      <ApiKeysVaultModal isOpen={vaultOpen} onClose={() => setVaultOpen(false)} />
     </div>
   );
 }

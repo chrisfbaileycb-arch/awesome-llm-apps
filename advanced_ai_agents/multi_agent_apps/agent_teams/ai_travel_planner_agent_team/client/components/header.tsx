@@ -19,8 +19,13 @@ import {
   Menu,
   X,
   Compass,
-  ChevronDown
+  ChevronDown,
+  KeyRound,
+  Lock
 } from "lucide-react";
+import ApiKeysVaultModal from "@/components/api-keys-vault-modal";
+import { lockSession } from "@/lib/master-auth";
+import { getKeyCount } from "@/lib/api-keys-store";
 
 const NAV_APPS = [
   { name: "Hub", href: "/", icon: Compass, label: "Overview" },
@@ -39,6 +44,21 @@ export default function Header() {
   const pathname = usePathname();
   const { data: session, isPending } = authClient.useSession();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [vaultOpen, setVaultOpen] = useState(false);
+  const [keyCounts, setKeyCounts] = useState({ configured: 0, total: 6 });
+
+  React.useEffect(() => {
+    setKeyCounts(getKeyCount());
+    const handleUpdate = () => setKeyCounts(getKeyCount());
+    window.addEventListener("byok-vault-updated", handleUpdate);
+    return () => window.removeEventListener("byok-vault-updated", handleUpdate);
+  }, []);
+
+  function handleLockApp() {
+    lockSession();
+    toast.info("Workbench locked. Enter master password to return.");
+    window.location.reload();
+  }
 
   async function handleLogout() {
     try {
@@ -94,7 +114,33 @@ export default function Header() {
           </div>
 
           {/* Right Header Controls */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            {/* Front-End BYOK API Keys Vault Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setVaultOpen(true)}
+              className="h-8 text-xs font-semibold flex items-center gap-1.5 border-primary/30 hover:border-primary"
+            >
+              <KeyRound className="w-3.5 h-3.5 text-primary" />
+              <span>API Keys</span>
+              <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.2 rounded-full font-mono">
+                {keyCounts.configured}/{keyCounts.total}
+              </span>
+            </Button>
+
+            {/* Lock Workbench Session Button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleLockApp}
+              className="h-8 text-xs text-muted-foreground hover:text-foreground"
+              title="Lock workbench with master password"
+            >
+              <Lock className="w-3.5 h-3.5 mr-1" />
+              <span className="hidden sm:inline">Lock</span>
+            </Button>
+
             <Link
               href="/plans"
               className="hidden sm:flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded"
@@ -166,6 +212,9 @@ export default function Header() {
           </div>
         )}
       </div>
+
+      {/* Front-End BYOK Key Vault Modal */}
+      <ApiKeysVaultModal isOpen={vaultOpen} onClose={() => setVaultOpen(false)} />
     </header>
   );
 }
