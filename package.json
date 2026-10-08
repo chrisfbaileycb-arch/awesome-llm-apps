@@ -1,0 +1,13 @@
+{
+  "name": "awesome-llm-apps",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "advanced_ai_agents/multi_agent_apps/agent_teams/ai_travel_planner_agent_team/client"
+  ],
+  "scripts": {
+    "dev": "node start-dev.js",
+    "build": "npm run build --workspace=client",
+    "start": "npm run start --workspace=client"
+  }
+}

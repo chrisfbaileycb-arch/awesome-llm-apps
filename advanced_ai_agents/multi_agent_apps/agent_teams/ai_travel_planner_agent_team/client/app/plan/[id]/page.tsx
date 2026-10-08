@@ -209,7 +209,7 @@ function StatusBadge({ status }: { status: TripDetails["status"] }) {
 
 export default function TripDetailsPage() {
   const params = useParams<{ id: string }>();
-  const tripId = params.id;
+  const tripId = params?.id;
 
   const [trip, setTrip] = useState<TripDetails | null>(null);
   const [loading, setLoading] = useState(true);

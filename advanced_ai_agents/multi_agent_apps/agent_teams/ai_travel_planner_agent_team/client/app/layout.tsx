@@ -13,6 +13,10 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: "TripCraft AI",
   description: "Your Journey, Perfectly Crafted with Intelligence",
+  openGraph: {
+    title: "TripCraft AI",
+    description: "Your Journey, Perfectly Crafted with Intelligence",
+  },
 };
 
 export default function RootLayout({

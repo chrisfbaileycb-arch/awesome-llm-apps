@@ -1,12 +1,11 @@
 
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { PrismaClient } from "@/lib/generated/prisma";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 export const auth = betterAuth({
-  database: prismaAdapter(prisma, {
+  secret: process.env.BETTER_AUTH_SECRET || "default_dev_secret_key_tripcraft_ai_123456",
+  database: prismaAdapter(prisma as any, {
     provider: "postgresql",
   }),
   emailAndPassword: {

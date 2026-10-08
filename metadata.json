@@ -1,0 +1,7 @@
+{
+  "name": "TripCraft AI",
+  "description": "Your Journey, Perfectly Crafted with Intelligence",
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
