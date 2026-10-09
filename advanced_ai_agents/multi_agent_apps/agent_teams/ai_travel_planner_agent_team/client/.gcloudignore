@@ -1,0 +1,10 @@
+# Node & build caches
+node_modules
+.next/cache
+.cache
+.turbo
+*.tsbuildinfo
+.env
+.env.local
+.env.*.local
+.DS_Store
