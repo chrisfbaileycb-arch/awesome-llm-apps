@@ -48,7 +48,7 @@ let nextBin = findNextBin();
 if (!nextBin) {
   console.log('[start-dev] Next binary not found, ensuring dependencies...');
   try {
-    execSync('bun install || npm install --legacy-peer-deps', {
+    execSync('npm install --legacy-peer-deps', {
       stdio: 'inherit',
     });
     nextBin = findNextBin();
